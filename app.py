@@ -66,5 +66,15 @@ def add_book():
     return render_template('add_book.html', authors=authors)
 
 
+@app.route('/')
+def home():
+    sort_by = request.args.get('sort_by', 'title')
+    if sort_by == 'author':
+        books = Book.query.join(Author).order_by(Author.name).all()
+    else:
+        books = Book.query.order_by(Book.title).all()
+    return render_template('home.html', books=books, sort_by=sort_by)
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

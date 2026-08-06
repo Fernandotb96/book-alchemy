@@ -4,11 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Book Alchemy</title>
   </head>
   <body>
 
+    <h1>Book Alchemy</h1>
+    <p>
+      Order by:
+      <a href="/?sort_by=title">Title</a> |
+      <a href="/?sort_by=author">Author</a>
+    </p>
+
     {% for book in books %}
-    <div> <h3>{{ book.title }}</h3>
+    <div>
+      <h2>{{ book.title }} — {{ book.author.name }}</h2>
     </div>
     {% endfor %}
 
