@@ -5,31 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Add Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
+  <div class="page">
 
-  <form action="/add_book" method="POST">
-  <label for="title">Book Title:</label>
-  <input type="text" id="title" name="title" required><br><br>
+    <h1>Add Book</h1>
+    <p class="tagline">Add a new title to the shelf.</p>
 
-  <label for="publication_year">Publication Year:</label>
-  <input type="number" id="publication_year" name="publication_year" required><br><br>
+    {% if message %}
+      <p class="message">{{ message }}</p>
+    {% endif %}
 
-  <label for="isbn">ISBN:</label>
-  <input type="text" id="isbn" name="isbn"><br><br>
+    <form class="card-form" action="/add_book" method="POST">
+      <div class="field">
+        <label for="title">Book Title</label>
+        <input type="text" id="title" name="title" required>
+      </div>
 
-  <label for="author_id">Author:</label>
-  <select id="author_id" name="author_id" required>
-    {% for author in authors %}
-      <option value="{{ author.id }}"> {{ author.name }} </option>
-    {% endfor %}
-  </select><br><br>
+      <div class="field">
+        <label for="publication_year">Publication Year</label>
+        <input type="number" id="publication_year" name="publication_year" required>
+      </div>
 
-  <input type="submit" value="Add Book">
-  </form>
+      <div class="field">
+        <label for="isbn">ISBN</label>
+        <input type="text" id="isbn" name="isbn">
+      </div>
 
-  {% if message %}
-    <p style="color: green;">{{ message }}</p>
-  {% endif %}
+      <div class="field">
+        <label for="author_id">Author</label>
+        <select id="author_id" name="author_id" required>
+          {% for author in authors %}
+            <option value="{{ author.id }}">{{ author.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <input type="submit" value="Add Book">
+    </form>
+
+  </div>
   </body>
 </html>
