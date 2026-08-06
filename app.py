@@ -43,5 +43,28 @@ def add_author():
     return render_template('add_author.html')
 
 
+@app.route('/add_book', methods=['GET', 'POST'])
+def add_book():
+    authors = Author.query.all()
+
+    if request.method == 'POST':
+        title = request.form['title']
+        publication_year = int(request.form['publication_year'])
+        isbn = request.form.get('isbn', None)
+        author_id = request.form['author_id']
+
+        new_book = Book(
+            title=title,
+            publication_year=publication_year,
+            isbn=isbn,
+            author_id=author_id
+        )
+        db.session.add(new_book)
+        db.session.commit()
+        return render_template('add_book.html', message="Book added successfully!", authors=authors)
+
+    return render_template('add_book.html', authors=authors)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
