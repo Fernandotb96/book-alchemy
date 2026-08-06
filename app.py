@@ -1,5 +1,5 @@
 from data_models import db, Author, Book
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import os
@@ -70,6 +70,7 @@ def add_book():
 def home():
     sort_by = request.args.get('sort_by', 'title')
     search_query = request.args.get('search', '').strip()
+    message = request.args.get('message')  # Comes from the delete redirect, if any
 
     query = Book.query
 
@@ -81,9 +82,8 @@ def home():
     else:
         books = query.order_by(Book.title).all()
 
-    message = None
-    if search_query and not books:
-        message = f'No se encontraron libros que coincidan con "{search_query}".'
+    if search_query and not books and not message:
+        message = f'No books found matching "{search_query}".'
 
     return render_template(
         'home.html',
@@ -92,6 +92,24 @@ def home():
         search_query=search_query,
         message=message
     )
+
+
+@app.route('/book/<int:book_id>/delete', methods=['POST'])
+def delete_book(book_id):
+    book = Book.query.get_or_404(book_id)
+    book_title = book.title
+    author = book.author
+
+    db.session.delete(book)
+    db.session.commit()
+
+    # If the author has no other books left, delete the author too
+    remaining_books = Book.query.filter_by(author_id=author.id).count()
+    if remaining_books == 0:
+        db.session.delete(author)
+        db.session.commit()
+
+    return redirect(url_for('home', message=f'Book "{book_title}" was successfully deleted.'))
 
 
 if __name__ == '__main__':
