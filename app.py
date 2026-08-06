@@ -69,11 +69,29 @@ def add_book():
 @app.route('/')
 def home():
     sort_by = request.args.get('sort_by', 'title')
+    search_query = request.args.get('search', '').strip()
+
+    query = Book.query
+
+    if search_query:
+        query = query.filter(Book.title.ilike(f'%{search_query}%'))
+
     if sort_by == 'author':
-        books = Book.query.join(Author).order_by(Author.name).all()
+        books = query.join(Author).order_by(Author.name).all()
     else:
-        books = Book.query.order_by(Book.title).all()
-    return render_template('home.html', books=books, sort_by=sort_by)
+        books = query.order_by(Book.title).all()
+
+    message = None
+    if search_query and not books:
+        message = f'No se encontraron libros que coincidan con "{search_query}".'
+
+    return render_template(
+        'home.html',
+        books=books,
+        sort_by=sort_by,
+        search_query=search_query,
+        message=message
+    )
 
 
 if __name__ == '__main__':

@@ -9,11 +9,22 @@
   <body>
 
     <h1>Book Alchemy</h1>
+
+    <form action="/" method="GET">
+      <input type="text" name="search" placeholder="Search by title.." value="{{ search_query or '' }}">
+      <input type="hidden" name="sort_by" value="{{ sort_by }}">
+      <input type="submit" value="Search">
+    </form>
+
     <p>
       Order by:
-      <a href="/?sort_by=title">Title</a> |
-      <a href="/?sort_by=author">Author</a>
+      <a href="/?sort_by=title&search={{ search_query }}">Title</a> |
+      <a href="/?sort_by=author&search={{ search_query }}">Author</a>
     </p>
+
+    {% if message %}
+      <p style="color: red;">{{ message }}</p>
+    {% endif %}
 
     {% for book in books %}
     <div>
