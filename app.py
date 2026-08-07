@@ -1,8 +1,8 @@
+import os
 from data_models import db, Author, Book
 from flask import Flask, request, render_template, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import os
+
 
 app = Flask(__name__)
 
@@ -12,9 +12,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(basedir, 'data
 db.init_app(app)
 
 
-# For creating the tables, we must execute the next two lines ONLY ONCE
-# with app.app_context():
-#     db.create_all()
+def create_tables():
+    """Create the database tables. Execute ONLY ONCE."""
+    with app.app_context():
+        db.create_all()
 
 
 def parse_date(date_str):
@@ -26,6 +27,7 @@ def parse_date(date_str):
 
 @app.route('/add_author', methods=['GET', 'POST'])
 def add_author():
+    """Show the add-author form and handle new author submission."""
     if request.method == 'POST':
         name = request.form['name']
         birth_date = parse_date(request.form.get('birthdate'))
@@ -45,6 +47,7 @@ def add_author():
 
 @app.route('/add_book', methods=['GET', 'POST'])
 def add_book():
+    """Show the add-book form and handle new book submission."""
     authors = Author.query.all()
 
     if request.method == 'POST':
@@ -68,6 +71,7 @@ def add_book():
 
 @app.route('/')
 def home():
+    """Show the library's book list, with optional search and sorting."""
     sort_by = request.args.get('sort_by', 'title')
     search_query = request.args.get('search', '').strip()
     message = request.args.get('message')  # Comes from the delete redirect, if any
@@ -96,6 +100,7 @@ def home():
 
 @app.route('/book/<int:book_id>/delete', methods=['POST'])
 def delete_book(book_id):
+    """Delete a book by ID and its author if they have no other books left."""
     book = Book.query.get_or_404(book_id)
     book_title = book.title
     author = book.author
